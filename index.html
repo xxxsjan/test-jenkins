@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>爆炸图片效果</title>
+  <style type="text/css">
+    html {
+      /* filter: grayscale(100%); */
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: transparent url(img/1.jpg) center center no-repeat;
+      filter: blur(5px);
+      z-index: -10;
+      background-size: cover;
+      /* animation: fadein 1s; */
+      transition: 1s;
+    }
+
+    @keyframes fadein {
+      0% {
+        opacity: 0;
+      }
+
+      40% {
+        opacity: 0;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
+    #box {
+      width: 640px;
+      height: 400px;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      margin-left: -320px;
+      margin-top: -200px;
+      border: 2px solid #fff;
+    }
+
+    #box>div {
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      position: absolute;
+      /* 该属性设置在父级元素中，它的子级元素具有3d效果 */
+      transform-style: preserve-3d;
+    }
+
+    #box>div>div {
+      position: absolute;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="box"></div>
+
+  <script type="text/javascript">
+    var imgs = ['img/1.jpg', 'img/2.jpg', 'img/3.jpg']
+    var z = 10000
+    var index = 0
+    // 大盒子
+    var box = document.getElementById('box')
+    var container = document.getElementsByClassName("container");
+
+    boom(10, 10)
+    function boom(l, t) {
+      // container[0].style.background = `url('${imgs[index]}')`
+
+      // 创建包裹div
+      var oParentNode = document.createElement("div")
+      oParentNode.style.zIndex = z
+      z--;
+      box.appendChild(oParentNode);
+      var x = l, y = t;
+      // 变量l*t个盒子
+      for (var i = 0; i < y; i++) {
+        // 循环创建第i行
+        for (var j = 0; j < x; j++) {
+          var oDiv = document.createElement("div");
+          oDiv.style.background = `url(${imgs[index]})`;
+          oDiv.style.width = box.clientWidth / x + 'px';
+          oDiv.style.height = box.clientHeight / y + 'px';
+          oDiv.style.left = box.clientWidth / x * j + 'px';
+          oDiv.style.top = box.clientHeight / y * i + 'px';
+          oDiv.style.backgroundPositionX = -(box.clientWidth / x) * j + 'px';
+          oDiv.style.backgroundPositionY = -(box.clientHeight / y) * i + 'px';
+          // 过渡时长
+          oDiv.style.transition = `${Math.random() + 0.5}s`;
+          oParentNode.appendChild(oDiv)
+        }
+      }
+      var allDiv = oParentNode.children;
+      setTimeout(() => {
+        console.log('定时器1')
+        index++;
+        index == imgs.length && (index = 0);
+        document.styleSheets[0].addRule('body::before', `background: url(${imgs[index]})`)
+        boom(l, t);
+        for (var i = 0; i < allDiv.length; i++) {
+          allDiv[i].style.transform = `perspective(800px) rotateX(${Math.random() * 500 - 250}deg) rotateY(${Math.random() * 500 - 250}deg) translateX(${Math.random() * 500 - 250}px) translateY(${Math.random() * 500 - 250}px) translateZ(${Math.random() * 500 - 250}px)`;
+
+          // 旋转 移动
+          // allDiv[i].style.transform = 'perspective(800px) rotateX(' + (Math.random() * 500 - 250) + 'deg) rotateY(' + (Math.random() * 500 - 250) + 'deg) translateX(' + (Math.random() * 500 - 250) + 'px) translateY(' + (Math.random() * 500 - 250) + 'px) translateZ(' + (Math.random() * 500 - 250) + 'px)';
+          allDiv[i].style.opacity = 0;
+        }
+      }, 2000);
+      setTimeout(() => {
+        oParentNode.remove(); console.log(`定时器2`)
+      }, 3500)
+    }
+  </script>
+</body>
+
+</html>
